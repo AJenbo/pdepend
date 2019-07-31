@@ -59,6 +59,9 @@ use PDepend\Source\AST\ASTMethod;
  */
 class IdBuilder
 {
+    /** @var array[] */
+    private $offsetInFile = array();
+
     /**
      * Generates an identifier for the given file instance.
      *
