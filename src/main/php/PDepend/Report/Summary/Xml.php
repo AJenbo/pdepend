@@ -51,6 +51,7 @@ use PDepend\Metrics\AnalyzerProjectAware;
 use PDepend\Report\CodeAwareGenerator;
 use PDepend\Report\FileAwareGenerator;
 use PDepend\Report\NoLogOutputException;
+use PDepend\Report\ReportGenerator;
 use PDepend\Source\AST\AbstractASTArtifact;
 use PDepend\Source\AST\ASTArtifactList;
 use PDepend\Source\AST\ASTClass;
@@ -179,6 +180,10 @@ class Xml extends AbstractASTVisitor implements CodeAwareGenerator, FileAwareGen
         }
 
         return $accepted;
+    }
+
+    public function merge(ReportGenerator $instance): void
+    {
     }
 
     /**

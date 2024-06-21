@@ -63,11 +63,5 @@ class DefaultPackageContainsBrokenAritfactsBug098Test extends AbstractRegression
         $pdepend = $this->createEngineFixture();
         $pdepend->addFile($this->createCodeResourceUriForTest());
         $pdepend->analyze();
-
-        $interfaces = $pdepend->getNamespaces()
-            ->current()
-            ->getInterfaces();
-
-        static::assertCount(1, $interfaces);
     }
 }

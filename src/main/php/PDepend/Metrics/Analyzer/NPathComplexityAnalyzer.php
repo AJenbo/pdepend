@@ -208,7 +208,7 @@ class NPathComplexityAnalyzer extends AbstractCachingAnalyzer implements Analyze
         // Add 2 for the branching per the NPath spec
         $npath += 2;
 
-        $this->complexityCollector *= $npath;
+        $this->complexityCollector = (int) ($this->complexityCollector * $npath);
     }
 
     /**
@@ -236,7 +236,8 @@ class NPathComplexityAnalyzer extends AbstractCachingAnalyzer implements Analyze
         $npath = $this->complexityCollector + $expr + 1;
 
         $this->popComplexityCollector();
-        $this->complexityCollector *= $npath;
+
+        $this->complexityCollector = (int) ($this->complexityCollector * $npath);
     }
 
     /**
@@ -279,7 +280,7 @@ class NPathComplexityAnalyzer extends AbstractCachingAnalyzer implements Analyze
             ++$npath;
         }
 
-        $this->complexityCollector *= $npath;
+        $this->complexityCollector = (int) ($this->complexityCollector * $npath);
     }
 
     /**
@@ -311,7 +312,7 @@ class NPathComplexityAnalyzer extends AbstractCachingAnalyzer implements Analyze
             }
         }
 
-        $this->complexityCollector *= $npath;
+        $this->complexityCollector = (int) ($this->complexityCollector * $npath);
     }
 
     /**
@@ -342,7 +343,7 @@ class NPathComplexityAnalyzer extends AbstractCachingAnalyzer implements Analyze
             }
         }
 
-        $this->complexityCollector *= $npath;
+        $this->complexityCollector = (int) ($this->complexityCollector * $npath);
     }
 
     /**
@@ -386,7 +387,7 @@ class NPathComplexityAnalyzer extends AbstractCachingAnalyzer implements Analyze
             ++$npath;
         }
 
-        $this->complexityCollector *= $npath;
+        $this->complexityCollector = (int) ($this->complexityCollector * $npath);
     }
 
     /**
@@ -436,7 +437,7 @@ class NPathComplexityAnalyzer extends AbstractCachingAnalyzer implements Analyze
             }
         }
 
-        $this->complexityCollector *= $npath;
+        $this->complexityCollector = (int) ($this->complexityCollector * $npath);
     }
 
     /**
@@ -478,7 +479,7 @@ class NPathComplexityAnalyzer extends AbstractCachingAnalyzer implements Analyze
             }
         }
 
-        $this->complexityCollector *= $npath;
+        $this->complexityCollector = (int) ($this->complexityCollector * $npath);
     }
 
     /**
@@ -505,7 +506,8 @@ class NPathComplexityAnalyzer extends AbstractCachingAnalyzer implements Analyze
         $npath = $this->complexityCollector + $expr + 1;
 
         $this->popComplexityCollector();
-        $this->complexityCollector *= $npath;
+
+        $this->complexityCollector = (int) ($this->complexityCollector * $npath);
     }
 
     public function dispatch(ASTNode $node): void

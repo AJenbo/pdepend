@@ -49,6 +49,7 @@ use PDepend\Metrics\Analyzer\DependencyAnalyzer;
 use PDepend\Report\CodeAwareGenerator;
 use PDepend\Report\FileAwareGenerator;
 use PDepend\Report\NoLogOutputException;
+use PDepend\Report\ReportGenerator;
 use PDepend\Source\AST\ASTArtifactList;
 use PDepend\Source\AST\ASTNamespace;
 use PDepend\Source\ASTVisitor\AbstractASTVisitor;
@@ -124,6 +125,10 @@ class Chart extends AbstractASTVisitor implements CodeAwareGenerator, FileAwareG
         }
 
         return false;
+    }
+
+    public function merge(ReportGenerator $instance): void
+    {
     }
 
     /**

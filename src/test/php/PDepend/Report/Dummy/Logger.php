@@ -126,6 +126,10 @@ class Logger implements CodeAwareGenerator, FileAwareGenerator
         return true;
     }
 
+    public function merge(ReportGenerator $instance): void
+    {
+    }
+
     /**
      * Closes the logger process and writes the output file.
      */

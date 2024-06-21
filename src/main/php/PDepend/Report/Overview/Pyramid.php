@@ -52,6 +52,7 @@ use PDepend\Metrics\Analyzer\NodeCountAnalyzer;
 use PDepend\Metrics\Analyzer\NodeLocAnalyzer;
 use PDepend\Report\FileAwareGenerator;
 use PDepend\Report\NoLogOutputException;
+use PDepend\Report\ReportGenerator;
 use PDepend\Util\FileUtil;
 use PDepend\Util\ImageConvert;
 use RuntimeException;
@@ -152,6 +153,10 @@ class Pyramid implements FileAwareGenerator
         }
 
         return true;
+    }
+
+    public function merge(ReportGenerator $instance): void
+    {
     }
 
     /**

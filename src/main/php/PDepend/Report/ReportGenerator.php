@@ -62,6 +62,13 @@ interface ReportGenerator
     public function log(Analyzer $analyzer): bool;
 
     /**
+     * Merge with another instance from parallel processing.
+     *
+     * @param static $instance
+     */
+    public function merge(self $instance): void;
+
+    /**
      * Closes the logger process and writes the output file.
      *
      * @throws NoLogOutputException If the no log target exists.

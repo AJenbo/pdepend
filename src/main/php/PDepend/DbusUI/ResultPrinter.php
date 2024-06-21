@@ -51,10 +51,7 @@ use DBusDict;
 use DBusUInt32;
 use PDepend\Metrics\Analyzer;
 use PDepend\ProcessListener;
-use PDepend\Source\AST\ASTNamespace;
 use PDepend\Source\ASTVisitor\AbstractASTVisitListener;
-use PDepend\Source\Builder\Builder;
-use PDepend\Source\Tokenizer\Tokenizer;
 
 /**
  * Fun result printer that uses dbus to show a notification window.
@@ -72,34 +69,30 @@ class ResultPrinter extends AbstractASTVisitListener implements ProcessListener
 
     /**
      * Is called when PDepend starts the file parsing process.
-     *
-     * @param Builder<ASTNamespace> $builder The used node builder instance.
      */
-    public function startParseProcess(Builder $builder): void
+    public function startParseProcess(): void
     {
         $this->startTime = time();
     }
 
     /**
      * Is called when PDepend has finished the file parsing process.
-     *
-     * @param Builder<ASTNamespace> $builder The used node builder instance.
      */
-    public function endParseProcess(Builder $builder): void
+    public function endParseProcess(): void
     {
     }
 
     /**
      * Is called when PDepend starts parsing of a new file.
      */
-    public function startFileParsing(Tokenizer $tokenizer): void
+    public function startFileParsing(): void
     {
     }
 
     /**
      * Is called when PDepend has finished a file.
      */
-    public function endFileParsing(Tokenizer $tokenizer): void
+    public function endFileParsing(): void
     {
         ++$this->parsedFiles;
     }

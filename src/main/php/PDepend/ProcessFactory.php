@@ -43,57 +43,44 @@
 
 namespace PDepend;
 
-// @codeCoverageIgnoreStart
-use PDepend\Metrics\AnalyzerListener;
-use PDepend\Source\ASTVisitor\ASTVisitListener;
+use React\ChildProcess\Process;
 
-/**
- * This listener can be used to get informations about the current pdepend process.
- *
- * @copyright 2008-2017 Manuel Pichler. All rights reserved.
- * @license http://www.opensource.org/licenses/bsd-license.php BSD License
- */
-interface ProcessListener extends AnalyzerListener, ASTVisitListener
+final class ProcessFactory
 {
-    /**
-     * Is called when PDepend starts the file parsing process.
-     */
-    public function startParseProcess(): void;
+    public function create(
+        int $start,
+        int $count
+    ): Process {
+        $commandArgs = $this->getCommandArgs($start, $count);
+        // var_dump(implode(' ', $commandArgs));
+
+        return new Process(implode(' ', $commandArgs), null, null);
+    }
 
     /**
-     * Is called when PDepend has finished the file parsing process.
+     * @return list<string>
      */
-    public function endParseProcess(): void;
+    public function getCommandArgs(int $start, int $count): array
+    {
+        $phpBinary = PHP_BINARY;
 
-    /**
-     * Is called when PDepend starts parsing of a new file.
-     */
-    public function startFileParsing(): void;
+        $mainScript = realpath(__DIR__ . '/../../../php-cs-fixer');
+        if (false === $mainScript
+            && isset($_SERVER['argv'][0])
+            && str_contains($_SERVER['argv'][0], 'pdepend')
+        ) {
+            $mainScript = $_SERVER['argv'][0];
+        }
 
-    /**
-     * Is called when PDepend has finished a file.
-     */
-    public function endFileParsing(): void;
+        $commandArgs = [
+            $phpBinary,
+            escapeshellarg($mainScript),
+            '--worker',
+            '--file-offset=' . $start,
+            '--file-count=' . $count,
+            ...array_slice($_SERVER['argv'], 1),
+        ];
 
-    /**
-     * Is called when PDepend starts the analyzing process.
-     */
-    public function startAnalyzeProcess(): void;
-
-    /**
-     * Is called when PDepend has finished the analyzing process.
-     */
-    public function endAnalyzeProcess(): void;
-
-    /**
-     * Is called when PDepend starts the logging process.
-     */
-    public function startLogProcess(): void;
-
-    /**
-     * Is called when PDepend has finished the logging process.
-     */
-    public function endLogProcess(): void;
+        return $commandArgs;
+    }
 }
-
-// @codeCoverageIgnoreEnd

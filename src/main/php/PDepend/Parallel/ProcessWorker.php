@@ -41,59 +41,54 @@
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
  */
 
-namespace PDepend;
+namespace PDepend\Parallel;
 
-// @codeCoverageIgnoreStart
-use PDepend\Metrics\AnalyzerListener;
-use PDepend\Source\ASTVisitor\ASTVisitListener;
+use PDepend\Metrics\Analyzer;
+use PDepend\ProcessListener;
+use PDepend\Source\ASTVisitor\AbstractASTVisitListener;
 
 /**
- * This listener can be used to get informations about the current pdepend process.
- *
- * @copyright 2008-2017 Manuel Pichler. All rights reserved.
- * @license http://www.opensource.org/licenses/bsd-license.php BSD License
+ * Transmit worker process events to the main process.
  */
-interface ProcessListener extends AnalyzerListener, ASTVisitListener
+class ProcessWorker extends AbstractASTVisitListener implements ProcessListener
 {
-    /**
-     * Is called when PDepend starts the file parsing process.
-     */
-    public function startParseProcess(): void;
+    public function startParseProcess(): void
+    {
+    }
 
-    /**
-     * Is called when PDepend has finished the file parsing process.
-     */
-    public function endParseProcess(): void;
+    public function endParseProcess(): void
+    {
+    }
 
-    /**
-     * Is called when PDepend starts parsing of a new file.
-     */
-    public function startFileParsing(): void;
+    public function startFileParsing(): void
+    {
+    }
 
-    /**
-     * Is called when PDepend has finished a file.
-     */
-    public function endFileParsing(): void;
+    public function endFileParsing(): void
+    {
+    }
 
-    /**
-     * Is called when PDepend starts the analyzing process.
-     */
-    public function startAnalyzeProcess(): void;
+    public function startAnalyzeProcess(): void
+    {
+    }
 
-    /**
-     * Is called when PDepend has finished the analyzing process.
-     */
-    public function endAnalyzeProcess(): void;
+    public function endAnalyzeProcess(): void
+    {
+    }
 
-    /**
-     * Is called when PDepend starts the logging process.
-     */
-    public function startLogProcess(): void;
+    public function startLogProcess(): void
+    {
+    }
 
-    /**
-     * Is called when PDepend has finished the logging process.
-     */
-    public function endLogProcess(): void;
+    public function endLogProcess(): void
+    {
+    }
+
+    public function startAnalyzer(Analyzer $analyzer): void
+    {
+    }
+
+    public function endAnalyzer(Analyzer $analyzer): void
+    {
+    }
 }
-
-// @codeCoverageIgnoreEnd
