@@ -60,7 +60,7 @@ use PDepend\Source\AST\ASTNamespace;
 class DependencyAnalyzer extends AbstractAnalyzer
 {
     /** Metrics provided by the analyzer implementation. */
-    private const
+    public const
         M_NUMBER_OF_CLASSES = 'tc',
         M_NUMBER_OF_CONCRETE_CLASSES = 'cc',
         M_NUMBER_OF_ABSTRACT_CLASSES = 'ac',

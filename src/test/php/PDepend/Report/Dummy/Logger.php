@@ -126,7 +126,12 @@ class Logger implements CodeAwareGenerator, FileAwareGenerator
         return true;
     }
 
-    public function merge(ReportGenerator $instance): void
+    public function getRawValues(): mixed
+    {
+        return null;
+    }
+
+    public function merge(mixed $data): void
     {
     }
 

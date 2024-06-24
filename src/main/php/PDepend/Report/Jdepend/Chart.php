@@ -49,8 +49,9 @@ use PDepend\Metrics\Analyzer\DependencyAnalyzer;
 use PDepend\Report\CodeAwareGenerator;
 use PDepend\Report\FileAwareGenerator;
 use PDepend\Report\NoLogOutputException;
-use PDepend\Report\ReportGenerator;
 use PDepend\Source\AST\ASTArtifactList;
+use PDepend\Source\AST\ASTClass;
+use PDepend\Source\AST\ASTInterface;
 use PDepend\Source\AST\ASTNamespace;
 use PDepend\Source\ASTVisitor\AbstractASTVisitor;
 use PDepend\Util\FileUtil;
@@ -78,6 +79,8 @@ class Chart extends AbstractASTVisitor implements CodeAwareGenerator, FileAwareG
 
     /** The context analyzer instance. */
     private DependencyAnalyzer $analyzer;
+
+    private array $metrics = [];
 
     /**
      * Sets the output log file.
@@ -125,10 +128,6 @@ class Chart extends AbstractASTVisitor implements CodeAwareGenerator, FileAwareG
         }
 
         return false;
-    }
-
-    public function merge(ReportGenerator $instance): void
-    {
     }
 
     /**
@@ -218,10 +217,40 @@ class Chart extends AbstractASTVisitor implements CodeAwareGenerator, FileAwareG
         unlink($temp);
     }
 
+    public function merge(mixed $data): void
+    {
+        foreach ($data as $name => $row) {
+            if (isset($this->metrics[$name])) {
+                $this->metrics[$name]['concrete'] += $row['concrete'];
+                $this->metrics[$name]['abstract'] += $row['abstract'];
+                $this->metrics[$name]['efferent'] += $row['efferent'];
+            } else {
+                $this->metrics[$name] = [
+					'concrete' => $row['concrete'],
+					'abstract' => $row['abstract'],
+                    'efferent' => $row['efferent'],
+                    'afferent' => [],
+                ];
+            }
+            foreach ($row['efferent'] as $afferent => $dummy) {
+                if (isset($this->metrics[$afferent])) {
+                    $this->metrics[$afferent]['afferent'][$name] = 1;
+                } else {
+                    $this->metrics[$afferent] = [
+                        'concrete' => [],
+                        'abstract' => [],
+						'efferent' => [],
+                        'afferent' => [$name => 1],
+                    ];
+                }
+            }
+        }
+    }
+
     /**
-     * @return array<int, array{size: int, abstraction: int, instability: int, distance: int, name: string, ratio: int}>
+     * @return array<string, array{size: int, abstraction: int, instability: int, distance: int, name: string, ratio: int}>
      */
-    private function getItems(): array
+    public function getRawValues(): mixed
     {
         $items = [];
         foreach ($this->code as $namespace) {
@@ -229,19 +258,55 @@ class Chart extends AbstractASTVisitor implements CodeAwareGenerator, FileAwareG
                 continue;
             }
 
-            $metrics = $this->analyzer->getStats($namespace);
+            $efferents = [];
+            foreach ($this->analyzer->getEfferents($namespace) as $efferent) {
+                $efferents[$efferent->getImage()] = 1;
+            }
 
-            if (count($metrics) === 0) {
-                continue;
+			$item = ['concrete' => [], 'abstract' => [], 'efferent' => $efferents];
+			foreach ($namespace->getTypes() as $type) {
+				if ($type::class !== ASTClass::class && $type::class !== ASTInterface::class) {
+					continue;
+				}
+				$key = $type->isAbstract() ? 'abstract' : 'concrete';
+				$item[$key][$namespace->getImage() . '\\' . $type->getImage()] = 1;
+			}
+
+            $items[Utf8Util::ensureEncoding($namespace->getImage())] = $item;
+        }
+
+        return $items;
+    }
+
+    /**
+     * @return array<string, array{size: int, abstraction: int, instability: int, distance: int, name: string, ratio: int}>
+     */
+    private function getItems(): array
+    {
+        $items = [];
+        foreach ($this->metrics as $name => $metrics) {
+			// Classes only picked up by reference can be abstract but not marked as such
+			$concrete = array_diff_key($metrics['concrete'], $metrics['abstract']);
+            $size = count($concrete) + count($metrics['abstract']);
+            if ($size === 0) {
+				continue;
+            }
+
+			$abstraction = count($metrics['abstract']) / $size;
+
+            $instability = 0;
+            $total = count($metrics['afferent']) + count($metrics['efferent']);
+            if ($total !== 0) {
+                $instability = count($metrics['efferent']) / $total;
             }
 
             $items[] = [
-                'size' => $metrics['cc'] + $metrics['ac'],
-                'abstraction' => $metrics['a'],
-                'instability' => $metrics['i'],
-                'distance' => $metrics['d'],
+                'size' => $size,
+                'abstraction' => $abstraction,
+                'instability' => $instability,
+                'distance' => abs($abstraction + $instability - 1),
                 'ratio' => 15,
-                'name' => Utf8Util::ensureEncoding($namespace->getImage()),
+                'name' => $name,
             ];
         }
 

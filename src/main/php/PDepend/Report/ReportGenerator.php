@@ -61,12 +61,12 @@ interface ReportGenerator
      */
     public function log(Analyzer $analyzer): bool;
 
+    public function getRawValues(): mixed;
+
     /**
      * Merge with another instance from parallel processing.
-     *
-     * @param static $instance
      */
-    public function merge(self $instance): void;
+    public function merge(mixed $instance): void;
 
     /**
      * Closes the logger process and writes the output file.

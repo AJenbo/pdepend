@@ -52,7 +52,6 @@ use PDepend\Metrics\Analyzer\NodeCountAnalyzer;
 use PDepend\Metrics\Analyzer\NodeLocAnalyzer;
 use PDepend\Report\FileAwareGenerator;
 use PDepend\Report\NoLogOutputException;
-use PDepend\Report\ReportGenerator;
 use PDepend\Util\FileUtil;
 use PDepend\Util\ImageConvert;
 use RuntimeException;
@@ -85,6 +84,8 @@ class Pyramid implements FileAwareGenerator
 
     /** The used node loc analyzer. */
     private NodeLocAnalyzer $nodeLoc;
+
+    private array $metrics = [];
 
     /**
      * Holds defined thresholds for the computed proportions. This set is based
@@ -155,8 +156,24 @@ class Pyramid implements FileAwareGenerator
         return true;
     }
 
-    public function merge(ReportGenerator $instance): void
+    private function collectMetrics(): array
     {
+        return $this->metrics;
+    }
+
+    public function merge(mixed $data): void
+    {
+        $this->metrics = [
+            'cyclo' => $this->metrics['cyclo'] + $data['cyclo'],
+            'loc' => $this->metrics['loc'] + $data['loc'],
+            'nom' => $this->metrics['nom'] + $data['nom'],
+            'noc' => $this->metrics['noc'] + $data['noc'],
+            'nop' => $this->metrics['nop'] + $data['nop'],
+            'ahh' => $this->metrics['ahh'] + $data['ahh'],
+            'andc' => $this->metrics['andc'] + $data['andc'],
+            'fanout' => $this->metrics['fanout'] + $data['fanout'],
+            'calls' => $this->metrics['calls'] + $data['calls'],
+        ];
     }
 
     /**
@@ -284,7 +301,7 @@ class Pyramid implements FileAwareGenerator
      * @return array<string, float|int>
      * @throws RuntimeException If one of the required analyzers isn't set.
      */
-    private function collectMetrics(): array
+    public function getRawValues(): array
     {
         if (!isset($this->coupling)) {
             throw new RuntimeException('Missing Coupling analyzer.');

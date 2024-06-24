@@ -327,6 +327,19 @@ class Engine
             }
         }
 
+        if ($this->isWorker) {
+            $data = [];
+            foreach ($this->generators as $generator) {
+                $data[] = $generator->getRawValues();
+            }
+            echo serialize($data);
+
+            exit;
+        }
+        foreach ($this->generators as $generator) {
+            $generator->merge($generator->getRawValues());
+        }
+
         foreach ($this->generators as $generator) {
             $generator->close();
         }
@@ -463,6 +476,9 @@ class Engine
                     $process->stdout->on('data', function ($output) use (&$buffers, $proccessNo): void {
                         $buffers[$proccessNo] .= $output;
                     });
+                    $process->stderr->on('data', function ($output) use (&$buffers, $proccessNo): void {
+                        echo $output;
+                    });
                     $process->stdout->on('end', function () use ($filesInChunk): void {
                         for ($i = 0; $i < $filesInChunk; $i++) {
                             $this->fireStartFileParsing();
@@ -474,7 +490,10 @@ class Engine
                 $cache = $this->cacheFactory->create();
                 $this->builder->setCache($cache);
                 foreach ($buffers as $buffer) {
-                    unserialize(trim($buffer));
+                    $data = unserialize(trim($buffer));
+                    foreach ($data as $id => $genData) {
+                        $this->generators[$id]->merge($genData);
+                    }
                 }
             }
         }
@@ -507,12 +526,6 @@ class Engine
                 }
 
                 $this->fireEndFileParsing();
-            }
-
-            if ($this->isWorker) {
-                echo serialize($this->builder->getNamespaces());
-
-                exit;
             }
         }
 

@@ -51,7 +51,6 @@ use PDepend\Metrics\Analyzer\DependencyAnalyzer;
 use PDepend\Report\CodeAwareGenerator;
 use PDepend\Report\FileAwareGenerator;
 use PDepend\Report\NoLogOutputException;
-use PDepend\Report\ReportGenerator;
 use PDepend\Source\AST\ASTArtifactList;
 use PDepend\Source\AST\ASTClass;
 use PDepend\Source\AST\ASTCompilationUnit;
@@ -164,7 +163,12 @@ class Xml extends AbstractASTVisitor implements CodeAwareGenerator, FileAwareGen
         return false;
     }
 
-    public function merge(ReportGenerator $instance): void
+    public function getRawValues(): mixed
+    {
+        return null;
+    }
+
+    public function merge(mixed $data): void
     {
     }
 
