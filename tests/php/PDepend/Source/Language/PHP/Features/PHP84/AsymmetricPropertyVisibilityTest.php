@@ -41,6 +41,11 @@
 
 namespace PDepend\Source\Language\PHP\Features\PHP84;
 
+use PDepend\Source\AST\ASTClass;
+use PDepend\Source\AST\ASTFieldDeclaration;
+use PDepend\Source\AST\ASTFormalParameter;
+use PDepend\Source\AST\ASTFormalParameters;
+
 /**
  * @covers \PDepend\Source\AST\ASTConstantDeclarator
  * @covers \PDepend\Source\Language\PHP\PHPParserVersion84
@@ -53,15 +58,74 @@ namespace PDepend\Source\Language\PHP\Features\PHP84;
 class AsymmetricPropertyVisibilityTest extends PHPParserVersion84TestCase
 {
     /**
-     * testParserHandlesAsymmetricVisibility
+     * testProperty
      */
-    public function testParserHandlesAsymmetricVisibility(): void
+    public function testProperty(): void
     {
-        $class = $this->parseCodeResourceForTest()
-            ->current()
-            ->getClasses()
-            ->current();
+        $class = $this->getFirstTypeForTestCase();
+        assert($class instanceof ASTClass);
 
-        static::assertCount(1, $class->getProperties());
+        /** @var ASTFieldDeclaration[] $properties */
+        $properties = $class->getChildren();
+
+        static::assertCount(1, $properties);
+
+        static::assertTrue($properties[0]->isPublic());
+        static::assertFalse($properties[0]->isProtected());
+        static::assertFalse($properties[0]->isPrivate());
+        static::assertFalse($properties[0]->isProtectedSet());
+        static::assertTrue($properties[0]->isPrivateSet());
+    }
+
+    /**
+     * testPromotion
+     */
+    public function testPromotion(): void
+    {
+        $children = $this->getFirstMethodForTestCase()
+            ->getChildren();
+
+        static::assertInstanceOf(ASTFormalParameters::class, $children[0]);
+
+        /** @var ASTFormalParameters $parametersBag */
+        $parametersBag = $children[0];
+
+        /** @var ASTFormalParameter[] $parameters */
+        $parameters = $parametersBag->getChildren();
+
+        static::assertCount(1, $parameters);
+
+        static::assertTrue($parameters[0]->isPromoted());
+        static::assertFalse($parameters[0]->isPublic());
+        static::assertFalse($parameters[0]->isProtected());
+        static::assertFalse($parameters[0]->isPrivate());
+        static::assertFalse($parameters[0]->isProtectedSet());
+        static::assertTrue($parameters[0]->isPrivateSet());
+    }
+
+    /**
+     * testPromotionTwo
+     */
+    public function testPromotionTwo(): void
+    {
+        $children = $this->getFirstMethodForTestCase()
+            ->getChildren();
+
+        static::assertInstanceOf(ASTFormalParameters::class, $children[0]);
+
+        /** @var ASTFormalParameters $parametersBag */
+        $parametersBag = $children[0];
+
+        /** @var ASTFormalParameter[] $parameters */
+        $parameters = $parametersBag->getChildren();
+
+        static::assertCount(1, $parameters);
+
+        static::assertTrue($parameters[0]->isPromoted());
+        static::assertFalse($parameters[0]->isPublic());
+        static::assertTrue($parameters[0]->isProtected());
+        static::assertFalse($parameters[0]->isPrivate());
+        static::assertFalse($parameters[0]->isProtectedSet());
+        static::assertTrue($parameters[0]->isPrivateSet());
     }
 }
